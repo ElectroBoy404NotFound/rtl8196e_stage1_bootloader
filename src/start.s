@@ -1,4 +1,4 @@
-    .section .text
+    .section .init
     .globl _start
 
     .set noat
@@ -219,42 +219,32 @@ skip_update:
     li $t1, 0x42000000
     sw $t1, 0($t0)
 
-    # Copy Loop
-    la   $t0, instr_bytes     # Load address of instr_bytes into $t0
-    li   $t1, 0x80100000      # Load target RAM address into $t1
-    li   $t2, 8               # Number of words (32 bytes / 4)
-
-copy_loop:
-    li $t7, 0xb8002000
-    li $t8, 0x48000000
-    sw $t8, 0($t7)
-    
-    lw   $t3, 0($t0)          # Load word from source
-    sw   $t3, 0($t1)          # Store word to RAM
-    addiu $t0, $t0, 4         # Increment source pointer by 4 bytes
-    addiu $t1, $t1, 4         # Increment destination pointer by 4 bytes
-    addiu $t2, $t2, -1        # Decrement counter
-    bgtz  $t2, copy_loop      # Loop until all words copied
-    nop                       # Delay slot (not needed, but added for safety)
-
     li $t0, 0xb8002000
-    li $t1, 0x49000000
+    li $t1, 0x30000000
     sw $t1, 0($t0)
     nop
 
-    li $t1, 0x80100004
-    jr $t1
+    la $sp, _stack_top
+
+    li $t0, 0xb8002000
+    li $t1, 0x4A000000
+    sw $t1, 0($t0)
+    nop
+
+    li $t0, 0xb8002000
+    li $t1, 0x40000000
+    sw $t1, 0($t0)
+    nop
+
+    jal cmain
+    nop
+
+    li $t0, 0xb8002000
+    li $t1, 0x4C000000
+    sw $t1, 0($t0)
     nop
 
 hang:
     j hang
     nop
 
-    .align 4
-instr_bytes:
-    li $t0, 0xb8002000
-    li $t1, 0x41000000
-    sw $t1, 0($t0)
-
-    j instr_bytes
-    nop

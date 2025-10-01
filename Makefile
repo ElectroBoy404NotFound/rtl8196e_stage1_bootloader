@@ -24,7 +24,7 @@ BIN_DIR := bin
 # Targets
 TARGET_ELF      := $(BIN_DIR)/bootloader.elf
 TARGET_BIN      := $(BIN_DIR)/bootloader.bin
-TARGET_BIN_PAD  := $(BIN_DIR)/bootloader_2MB.bin
+TARGET_BIN_PAD  := $(BIN_DIR)/fw_2MB.bin
 PAD_SIZE        := 2097152  # 2MB
 
 # Linker script
@@ -60,7 +60,7 @@ $(TARGET_ELF): $(OBJ) | $(BIN_DIR)
 
 # Generate raw binary
 $(TARGET_BIN): $(TARGET_ELF)
-	$(OBJCOPY) --only-section=.text --only-section=.code -O binary $< $@
+	$(OBJCOPY) -O binary $< $@
 
 # Generate 2MB padded binary
 $(TARGET_BIN_PAD): $(TARGET_BIN)
